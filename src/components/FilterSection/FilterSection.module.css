@@ -1,14 +1,23 @@
-.header{
+.wrapper{
+    /* display: flex;
+    height: 380px;
+    flex-direction: column;
+    padding-left: 32px;
+    padding-top: 10px; */
+}
+
+.heading{
     display: flex;
-    justify-content: space-between;
+    justify-content:left;
     align-items: baseline;
 }
 
-.cardWrapper{
-    margin-top: 30px;
-}
-.wrapper{
+.progressBar{
     display: flex;
-    gap: 40px;
-    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+}
+
+.cardsWrapper{
+    margin-top: 30px;
 }

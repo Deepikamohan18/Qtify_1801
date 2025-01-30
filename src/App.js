@@ -1,135 +1,125 @@
-import React from 'react'
-import Navbar from './components/Navbar/Navbar.jsx'
-import Hero from './components/Hero/Hero.jsx'
-import styles from './App.module.css'
-import { useEffect, useState } from 'react'
-import { fetchTopAlbums, fetchNewAlbums, fetchSongs } from './api/api'
-import Section from './components/Section/Section.jsx'
-import FilterSection from './components/FilterSection/FilterSection'
+import logo from './logo.svg';
+import Navbar from './components/Navbar/Navbar';
+import Hero from './components/Hero/Hero';
+import Section from './components/Section/Section';
+import FilterSection from './components/FilterSection/FilterSection';
+import {fetchTopAlbums, fetchNewAlbums, fetchSongs} from './api/api'
+import { useEffect, useState } from 'react';
+import styles from "./App.module.css"
 
 function App() {
 
-  const [topAlbumSongs, setTopAlbumSongs] = useState([])
-  const [newAlbumSongs, setNewAlbumSongs] = useState([])
-  const [filteredDataValues, setFilteredDataValues] = useState([''])
-  const [toggle, setToggle] = useState(false)
-  const [value, setValue] = useState(0);
+  //state to store top/new Albums, topAlbumSongs is just an array of 16-17 albums with some info and an array of songs in that album
+  const[topAlbumSongs,setTopAlbumSongs]=useState([]);
+  const[newAlbumSongs,setNewAlbumSongs]=useState([]);
 
-  const generateSongsData = (value) => {
+  //states related to the working of filterSection of songs:
+  //state to store  original array of songs(unfiltered)
+  const[songsData, setSongsData]=useState([]);
 
-    let songData = newAlbumSongs[0].songs;
+  //to store the index selected inn filters, can be ignored
+  const[value,setValue]= useState(0);
 
-    let key;
-    if (value === 0) {
+  //to store the finally filtered songs
+  const[filteredData, setFilteredData]=useState([]);
 
-      setFilteredDataValues(songData)
-      return;
+
+  //function to get top/new Album/Songs we will be using function from API file also
+  const generateTopAlbumSongs=async()=>{
+    try{
+      const res= await fetchTopAlbums();
+    setTopAlbumSongs(res);
     }
-
-    else if (value === 1) {
-      key = 'rock'
-
-    }
-
-    else if (value === 2) {
-      key = 'pop'
-    }
-
-    else if (value === 3) {
-      key = 'jazz'
-    }
-
-    else if (value === 4) {
-      key = 'blues'
-    }
-
-    const data = songData.filter((item) => {
-      return item.genre.key === key
-
-    })
-    setFilteredDataValues(data)
-
+    catch(error){
+      console.log(error);
+      return null;
+    } 
   }
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue)
-
-    generateSongsData(newValue)
-
-  }
-  const handleToggle = () => {
-    setToggle(!toggle)
-  }
-
-  const filteredData = (val) => {
-    generateSongsData(val)
-    
-  }
-
-  const generateTopAlbumSongs = async () => {
-    try {
-      const topAlbumSongs = await fetchTopAlbums()
-      setTopAlbumSongs(topAlbumSongs)
+  const generateNewAlbumSongs=async()=>{
+    try{
+      const res= await fetchNewAlbums();
+    setNewAlbumSongs(res);
     }
-    catch (error) {
-      console.log(error)
-      return null
-    }
-
+    catch(error){
+      console.log(error);
+      return null;
+    } 
   }
 
-  const generateNewAlbumSongs = async () => {
-    try {
-      const newAlbumSongs = await fetchNewAlbums()
-      setNewAlbumSongs(newAlbumSongs);
-     
+  const generateSongs=async()=>{
+    try{
+      console.log("generateSongs");
+      const res=await fetchSongs();
+      setSongsData(res);
+      setFilteredData(res);
     }
-    catch (error) {
-      console.log(error)
-      return null
+    catch(error){
+      return null;
     }
   }
 
+//function to generate filtered songs after selecting one tab
+const generateNewSongs=(index)=>{
 
-  const generateFilterSongs = async () => {
-
-    try {
-      const newAlbumSongs = await fetchSongs()
-      setFilteredDataValues(newAlbumSongs);
-    }
-
-    catch (error) {
-      console.log(error)
-      return null 
-
-    }
+  let key="";
+  if(index===0){
+    // suppose someOne select 0th tab after 2nd tab 
+    //set the default songsData as the final filtered data, bcz we need to show all of songs now
+    generateSongs();
+    return;
+  }
+  else if(index===1){
+    key="rock";
+  }
+  else if(index===2){
+    key="pop";
   }
 
-  useEffect(() => {
-    // eslint-disable-next-line
-  }, [value])
+  else if(index===3){
+    key="jazz";
+  }
+  else if(index===4){
+    key="blues";
+  }
 
-  useEffect(() => {
-    
+  let newSongsArray=songsData.filter((song)=>{
+    console.log("key: ",key)
+    return(song.genre.key===key);
+  })
+
+  console.log("generateNewSongs triggered and filtered this Data: ", newSongsArray)
+  setFilteredData(newSongsArray);
+}
+//rock pop jazz blues
+
+
+//to handle any change in the selected tab of the songs section and call the generateNewSongs
+ const handleChangeIndex= async(newValue)=>{
+  console.log("handleChangeIndex triggered with newValue: ",newValue)
+  setValue(newValue);
+  generateNewSongs(newValue);
+ }
+
+  useEffect(()=>{
     generateTopAlbumSongs();
     generateNewAlbumSongs();
-    generateFilterSongs();
-    // setFilteredDataValues(newAlbumSongs);
+    generateSongs();
+  },[])
 
-  }, [])
-  
-  
   return (
-    <>
+    <div className="App">
       <Navbar />
       <Hero />
       <div className={styles.sectionWrapper}>
-        <Section type='album' title='Top Albums' data={topAlbumSongs} />
-        <Section type='album' title='New Albums' data={newAlbumSongs} />
-        <FilterSection data={newAlbumSongs} type='songFilter' title='Songs' filteredData={filteredData} filteredDataValues={filteredDataValues} value={value} handleChange={handleChange} handleToggle={handleToggle}/>
+      <Section type='album' title='Top Albums' data={topAlbumSongs}/>
+      <Section type='album' title='New Albums' data={newAlbumSongs}/>
+      <FilterSection  type='song' title='Songs' value={value} filteredData={filteredData} handleChangeIndex={handleChangeIndex}/>
       </div>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
+
+// rcfe: react component function export

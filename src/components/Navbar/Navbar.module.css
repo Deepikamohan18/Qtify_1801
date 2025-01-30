@@ -1,14 +1,11 @@
-.navbar {
-    background-color: var(--color-primary);
+.navbar{
     display: flex;
-    align-items: center;
+    flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-primary);
     width: 100vw;
-    height: 74px;
+    height: 75px;
     padding: 0px 32px;
-  }
-
-  .logoDiv{
-    display: flex;
-    margin: 14px;
-  }
+    /* border: 3px solid red; */
+}

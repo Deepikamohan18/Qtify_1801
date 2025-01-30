@@ -16,3 +16,4 @@ const Hero = () => {
 }
 
 export default Hero
+// rcfe: react component function export

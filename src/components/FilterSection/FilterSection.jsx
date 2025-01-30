@@ -1,39 +1,37 @@
-// import React, { useState } from 'react'
-import styles from './FilterSection.module.css'
-import { Box, CircularProgress } from '@mui/material'
-import Card from "../Card/Card";
-// import CustomTabPanel from '../BasicTabs/BasicTabs'
-import Carousel from "../Carousel/Carousel";
+import React, { useEffect } from 'react'
+import styles from "./FilterSection.module.css";
+import Section from '../Section/Section';
 import BasicTabs from '../BasicTabs/BasicTabs';
+import Carousel from '../Carousel/Carousel';
+import Card from '../Card/Card';
+import { CircularProgress } from '@mui/material';
+// import audio from '/some path'
 
+const FilterSection = ({type, title, value, filteredData, handleChangeIndex}) => {
 
+    // function playSound(){
+    //     let sound = new Audio(audio)
+    //     sound.play()
+    // }
 
-const FilterSection = ({ 
-  title, 
-  data, 
-  type, 
-  filteredData,
-  filteredDataValues,
-  value, 
-  handleChange, 
-}) => {
 
   return (
-    <div>
-      <div className={styles.header}>
-        <h3>{title}</h3>
-      </div>
-      <BasicTabs value={value} handleChange={handleChange} filteredData={filteredData}/>
-      {data.length === 0 ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <CircularProgress />
-        </Box>
-      ) :
-        ( 
-          <div className={styles.cardsWrapper}>
-            <Carousel data={filteredDataValues} renderCardComponent={(data) => <Card data={data} type={type} />} />
-          </div>
+    <div className={styles.wrapper}>
+       
+            <div className={styles.heading}>
+               <h3>{title}</h3> 
+            </div>
+            <BasicTabs handleChangeIndex={handleChangeIndex}/>
+        {filteredData.length?(
+                <div className={styles.cardsWrapper}>
+                    <Carousel data={filteredData} renderCardComponent={(filteredData)=><Card data={filteredData} type={type}/>}/>
+                </div>
+        ):(
+            <div  className={styles.progressBar}>
+                <CircularProgress/>
+            </div>
         )}
+
     </div>
   )
 }

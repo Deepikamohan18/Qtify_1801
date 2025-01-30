@@ -1,34 +1,68 @@
-import React, { useEffect } from 'react'
-import 'swiper/css'
-import {Navigation} from 'swiper/modules'
-import {Swiper,useSwiper,SwiperSlide} from 'swiper/react'
-import styles from './Carousel.module.css'
-import CarouselLeft from './CarouselLeft/CarouselLeft'
-import CarouselRight from './CarouselRight/CarouselRight'
+import React, { useEffect } from 'react';
 
-const Controls = ({data}) => {
+// Import Swiper React components and hooks
+import { useSwiper, Swiper, SwiperSlide } from 'swiper/react';
+import CarouselLeft from './CarouselLeft/CarouselLeft';
+import CarouselRight from "./CarouselRight/CarouselRight";
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import styles from "./Carousel.module.css";
+
+//No use for this currently 
+import { Navigation } from 'swiper/modules';
+
+
+const Controls=({data})=>{
     let swiper = useSwiper();
-    console.log(swiper)
-    useEffect(() => {
-        // swiper.slideTo(0)
+    
+    useEffect(()=>{
+        //swiper.slideTo(index, speed, runCallbacks(optional))
+        swiper.slideTo(0,1)
     },[data])
 
-    return <></>
+    return <>
+    
+    </>
 }
 
 const Carousel = ({data,renderCardComponent}) => {
   return (
+
     <div className={styles.wrapper}>
-        <Swiper initialSlide = {0} modules={{Navigation}} slidesPerView={'auto'} spaceBetween={40} allowTouchMove>
-            <Controls data={data} />
+    <Swiper
+        initialSlide={0}
+        spaceBetween={40}
+        slidesPerView={"auto"}
+         // The Pagination module from Swiper.js is explicitly imported and passed to the modules prop of the Swiper component.
+         modules={[Navigation]}
+         allowTouchMove
+        >
+        <Controls data={data}/>
             <CarouselLeft />
-            <CarouselRight />
-            {data.map(item => (
-                <SwiperSlide>{renderCardComponent(item)}</SwiperSlide>
-            ))}
-        </Swiper>
+         <CarouselRight />
+         {/* since we need to show the cards of album inside the section, hence use SwiperSlide inside map on data array */}
+      {data.map((item, index) => (
+         // renderCardComponent is using the card component in it to show cards, see in section component
+        <SwiperSlide key={index}>{renderCardComponent(item)}</SwiperSlide>
+      ))}
+       
+    </Swiper>
     </div>
   )
 }
 
-export default Carousel
+export default Carousel;
+
+/*
+1. rafce shortcut
+
+2. swiper.slideTo(index, speed, runCallbacks):	
+    Run transition to the slide with index number equal to 'index' parameter for the duration equal to 'speed' parameter.
+
+3.  In React, a swiper component is typically used to create interactive and touch-enabled carousels or slideshows. 
+    It allows users to swipe through a series of content panels horizontally or vertically on touch-enabled devices or through mouse drag on desktop browsers.
+
+
+*/
