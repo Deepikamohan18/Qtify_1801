@@ -1,68 +1,51 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css"; // Import Swiper styles
+import { Navigation } from "swiper"; // Correct module import
 
-// Import Swiper React components and hooks
-import { useSwiper, Swiper, SwiperSlide } from 'swiper/react';
-import CarouselLeft from './CarouselLeft/CarouselLeft';
+import CarouselLeft from "./CarouselLeft/CarouselLeft";
 import CarouselRight from "./CarouselRight/CarouselRight";
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
+import ErrorBoundary from "../ErrorBoundary"; // Import ErrorBoundary
 import styles from "./Carousel.module.css";
 
-//No use for this currently 
-import { Navigation } from 'swiper/modules';
+// Controls component to handle slide changes
+const Controls = ({ swiper, data }) => {
+  useEffect(() => {
+    if (swiper) {
+      swiper.slideTo(0, 1); // Move to first slide when data changes
+    }
+  }, [swiper, data]);
 
+  return null;
+};
 
-const Controls=({data})=>{
-    let swiper = useSwiper();
-    
-    useEffect(()=>{
-        //swiper.slideTo(index, speed, runCallbacks(optional))
-        swiper.slideTo(0,1)
-    },[data])
+const Carousel = ({ data, renderCardComponent }) => {
+  const [swiperInstance, setSwiperInstance] = useState(null);
 
-    return <>
-    
-    </>
-}
-
-const Carousel = ({data,renderCardComponent}) => {
   return (
-
-    <div className={styles.wrapper}>
-    <Swiper
-        initialSlide={0}
-        spaceBetween={40}
-        slidesPerView={"auto"}
-         // The Pagination module from Swiper.js is explicitly imported and passed to the modules prop of the Swiper component.
-         modules={[Navigation]}
-         allowTouchMove
+    <ErrorBoundary>
+      {" "}
+      {/* Wrap with ErrorBoundary */}
+      <div className={styles.wrapper}>
+        <Swiper
+          onSwiper={setSwiperInstance} // Capture Swiper instance
+          initialSlide={0}
+          spaceBetween={40}
+          slidesPerView={"auto"}
+          modules={[Navigation]} // Pass Navigation module
+          allowTouchMove
+          navigation
         >
-        <Controls data={data}/>
-            <CarouselLeft />
-         <CarouselRight />
-         {/* since we need to show the cards of album inside the section, hence use SwiperSlide inside map on data array */}
-      {data.map((item, index) => (
-         // renderCardComponent is using the card component in it to show cards, see in section component
-        <SwiperSlide key={index}>{renderCardComponent(item)}</SwiperSlide>
-      ))}
-       
-    </Swiper>
-    </div>
-  )
-}
+          <Controls swiper={swiperInstance} data={data} />
+          <CarouselLeft swiper={swiperInstance} />
+          <CarouselRight swiper={swiperInstance} />
+          {data.map((item, index) => (
+            <SwiperSlide key={index}>{renderCardComponent(item)}</SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+    </ErrorBoundary>
+  );
+};
 
 export default Carousel;
-
-/*
-1. rafce shortcut
-
-2. swiper.slideTo(index, speed, runCallbacks):	
-    Run transition to the slide with index number equal to 'index' parameter for the duration equal to 'speed' parameter.
-
-3.  In React, a swiper component is typically used to create interactive and touch-enabled carousels or slideshows. 
-    It allows users to swipe through a series of content panels horizontally or vertically on touch-enabled devices or through mouse drag on desktop browsers.
-
-
-*/
